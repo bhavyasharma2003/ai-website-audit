@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# Environment files
+env
+.env
+.env.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+
+# OS files
+.DS_Store
+
+# Generated files
+Backend/storage/reports/
+PDF/
+
+# Puppeteer / Chrome cache
+.chrome/
+

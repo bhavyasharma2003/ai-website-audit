@@ -1,0 +1,126 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  body {
+    background-color: #f4f6f8;
+    color: #333;
+  }
+  
+  /* Header */
+  .header {
+    background: #1e293b;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .header p {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
+  /* Stats cards */
+  .stats {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .card {
+    background: #fff;
+    flex: 1;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .card h2 {
+    font-size: 32px;
+    color: #2563eb;
+  }
+  
+  /* Table */
+  .table-section {
+    padding: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  th, td {
+    padding: 12px;
+    text-align: center;
+  }
+  
+  th {
+    background: #2563eb;
+    color: white;
+  }
+  
+  tr:nth-child(even) {
+    background: #f1f5f9;
+  }
+  
+  /* Buttons */
+  .btn {
+    background: #2563eb;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .btn:hover {
+    background: #1d4ed8;
+  }
+  
+  .download {
+    display: inline-block;
+    margin-top: 10px;
+  }
+  
+  /* Score cards */
+  .scores {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .score-card {
+    background: #fff;
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .score-card strong {
+    font-size: 28px;
+    color: #16a34a;
+  }
+  
+  /* Content boxes */
+  .box {
+    background: #fff;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .box h2 {
+    margin-bottom: 10px;
+  }
+  

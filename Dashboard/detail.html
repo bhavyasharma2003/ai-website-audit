@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audit Detail</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>Audit Report</h1>
+    <p id="detail-url">Loading...</p>
+  </header>
+
+  <section class="scores">
+    <div class="score-card">
+      <span>Performance</span>
+      <strong id="score-performance">-</strong>
+    </div>
+    <div class="score-card">
+      <span>SEO</span>
+      <strong id="score-seo">-</strong>
+    </div>
+    <div class="score-card">
+      <span>Accessibility</span>
+      <strong id="score-accessibility">-</strong>
+    </div>
+    <div class="score-card">
+      <span>Best Practices</span>
+      <strong id="score-best">-</strong>
+    </div>
+  </section>
+
+  <section class="box">
+    <h2>Crawl Data</h2>
+    <p><b>Title:</b> <span id="crawl-title">-</span></p>
+    <p><b>Meta Description:</b> <span id="crawl-meta">-</span></p>
+    <p><b>H1 Tags:</b></p>
+    <ul id="crawl-h1-list">
+    </ul>
+  </section>
+
+  <section class="box">
+    <h2>AI Summary</h2>
+    <p id="ai-summary">
+      Loading...
+    </p>
+  </section>
+
+  <section class="box">
+    <h2>Recommendations</h2>
+    <ul id="ai-recommendations">
+    </ul>
+  </section>
+
+  <section class="box">
+    <a class="btn download" id="pdf-link" href="#" target="_blank">Download PDF Report</a>
+  </section>
+
+  <script>
+    const API_BASE = "http://localhost:4000";
+
+    function getAuditIdFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    }
+
+    async function loadAuditDetail() {
+      const id = getAuditIdFromQuery();
+      if (!id) {
+        document.getElementById("detail-url").textContent = "No audit ID provided";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/audit/${id}`);
+        if (!res.ok) {
+          document.getElementById("detail-url").textContent = "Audit not found";
+          return;
+        }
+        const data = await res.json();
+        const audit = data.audit;
+
+        document.getElementById("detail-url").textContent = audit.url;
+
+        const scores = audit.lighthouse?.scores || {};
+        document.getElementById("score-performance").textContent = scores.performance ?? "-";
+        document.getElementById("score-seo").textContent = scores.seo ?? "-";
+        document.getElementById("score-accessibility").textContent = scores.accessibility ?? "-";
+        document.getElementById("score-best").textContent = scores.bestPractices ?? "-";
+
+        const crawl = audit.crawlData || {}; // stored via pdfGenerator helper
+        document.getElementById("crawl-title").textContent = crawl.title || "N/A";
+        document.getElementById("crawl-meta").textContent = crawl.metaDescription || "N/A";
+        const h1List = document.getElementById("crawl-h1-list");
+        h1List.innerHTML = "";
+        if (crawl.h1Headings && crawl.h1Headings.length) {
+          crawl.h1Headings.forEach((h1) => {
+            const li = document.createElement("li");
+            li.textContent = h1;
+            h1List.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.textContent = "None found";
+          h1List.appendChild(li);
+        }
+
+        if (audit.aiSummary?.summary) {
+          document.getElementById("ai-summary").textContent = audit.aiSummary.summary;
+        } else {
+          document.getElementById("ai-summary").textContent = "No AI summary available.";
+        }
+
+        const recList = document.getElementById("ai-recommendations");
+        recList.innerHTML = "";
+        if (audit.aiSummary?.recommendations && audit.aiSummary.recommendations.length) {
+          audit.aiSummary.recommendations.forEach((rec) => {
+            const li = document.createElement("li");
+            li.textContent = rec;
+            recList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.textContent = "No recommendations available.";
+          recList.appendChild(li);
+        }
+
+        const pdfLink = document.getElementById("pdf-link");
+        if (audit._id && audit.pdfPath) {
+          pdfLink.href = `${API_BASE}/audit/${audit._id}/pdf`;
+        } else {
+          pdfLink.href = "#";
+          pdfLink.textContent = "PDF not available";
+        }
+      } catch (err) {
+        console.error("Failed to load audit detail:", err);
+        document.getElementById("detail-url").textContent = "Error loading audit detail";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadAuditDetail);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Website Audit Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>Website Audit Dashboard</h1>
+    <p>AI-Powered Website Performance & SEO Audits</p>
+  </header>
+
+  <section class="stats">
+    <div class="card">
+      <h2 id="stat-total-audits">0</h2>
+      <p>Total Audits</p>
+    </div>
+    <div class="card">
+      <h2 id="stat-average-score">0</h2>
+      <p>Average Performance</p>
+    </div>
+    <div class="card">
+      <h2 id="stat-pdf-count">0</h2>
+      <p>PDF Reports</p>
+    </div>
+  </section>
+
+  <section class="table-section">
+    <form id="audit-form" class="audit-form">
+      <input
+        type="url"
+        id="audit-url-input"
+        placeholder="https://example.com"
+        required
+      />
+      <button type="submit" class="btn">Run Audit</button>
+      <span id="audit-status" class="audit-status"></span>
+    </form>
+
+  <section class="table-section">
+    <table>
+      <thead>
+        <tr>
+          <th>Website</th>
+          <th>Performance</th>
+          <th>SEO</th>
+          <th>Accessibility</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="audits-tbody">
+      </tbody>
+    </table>
+  </section>
+
+  <script>
+    const API_BASE = "http://localhost:4000";
+
+    function formatDate(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      return d.toLocaleDateString();
+    }
+
+    async function loadAudits() {
+      const tbody = document.getElementById("audits-tbody");
+      const statTotal = document.getElementById("stat-total-audits");
+      const statAvg = document.getElementById("stat-average-score");
+      const statPdf = document.getElementById("stat-pdf-count");
+
+      tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
+
+      try {
+        const res = await fetch(API_BASE + "/audit");
+        const data = await res.json();
+        const audits = data.audits || [];
+
+        statTotal.textContent = audits.length.toString();
+
+        let totalPerf = 0;
+        let perfCount = 0;
+        let pdfCount = 0;
+
+        tbody.innerHTML = "";
+        audits.forEach((audit) => {
+          const scores = audit.lighthouse?.scores || {};
+          const performance = scores.performance ?? "-";
+          const seo = scores.seo ?? "-";
+          const accessibility = scores.accessibility ?? "-";
+
+          if (typeof performance === "number") {
+            totalPerf += performance;
+            perfCount += 1;
+          }
+          if (audit.pdfPath) {
+            pdfCount += 1;
+          }
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${audit.url}</td>
+            <td>${performance}</td>
+            <td>${seo}</td>
+            <td>${accessibility}</td>
+            <td>${formatDate(audit.createdAt)}</td>
+            <td><a class="btn" href="detail.html?id=${audit._id}">View</a></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        statPdf.textContent = pdfCount.toString();
+        statAvg.textContent =
+          perfCount > 0 ? Math.round(totalPerf / perfCount).toString() : "0";
+
+        if (audits.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='6'>No audits yet.</td></tr>";
+        }
+      } catch (err) {
+        console.error("Failed to load audits:", err);
+        tbody.innerHTML =
+          "<tr><td colspan='6'>Failed to load audits from backend.</td></tr>";
+      }
+    }
+
+    async function runAudit(event) {
+      event.preventDefault();
+      const input = document.getElementById("audit-url-input");
+      const statusEl = document.getElementById("audit-status");
+
+      const url = input.value.trim();
+      if (!url) {
+        statusEl.textContent = "Please enter a URL.";
+        return;
+      }
+
+      statusEl.textContent = "Starting audit...";
+      statusEl.classList.add("loading");
+
+      try {
+        const res = await fetch(API_BASE + "/audit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          statusEl.textContent =
+            "Audit failed: " + (err.error || res.statusText || res.status);
+          statusEl.classList.remove("loading");
+          return;
+        }
+
+        const data = await res.json();
+        statusEl.textContent = "Audit complete!";
+        statusEl.classList.remove("loading");
+        input.value = "";
+
+        // Reload list to include the new audit
+        await loadAudits();
+      } catch (err) {
+        console.error("Audit request failed:", err);
+        statusEl.textContent = "Audit failed. Check backend logs.";
+        statusEl.classList.remove("loading");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadAudits();
+      const form = document.getElementById("audit-form");
+      form.addEventListener("submit", runAudit);
+    });
+  </script>
+
+</body>
+</html>
