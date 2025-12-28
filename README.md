@@ -138,7 +138,7 @@ Download PDF report
 📌 Dashboard consumes backend APIs running locally.
 
 
-📄 PDF Report
+## 📄 PDF Report
 Each audit generates a professional PDF report containing:
 
 Website details
@@ -155,7 +155,7 @@ PDFs are stored locally and accessible via dashboard.
 ---
 
 
-🔐 Security Practices
+## 🔐 Security Practices
 API keys stored only in local env file
 
 .gitignore prevents secrets from being pushed
@@ -167,7 +167,7 @@ API keys rotated after detection (best practice)
 
 ---
 
-⚠️ Limitations
+## ⚠️ Limitations
 Some websites block automated crawling
 
 Lighthouse audits are time-consuming (30–60 sec)
@@ -179,7 +179,7 @@ Backend not deployed online due to browser automation constraints
 
 ---
 
-🔮 Future Enhancements
+## 🔮 Future Enhancements
 Online deployment using containerized Chrome
 
 User authentication
@@ -193,7 +193,7 @@ Multi-website comparison
 
 ---
 
-🎓 Academic Note
+## 🎓 Academic Note
 This project was developed as part of an academic submission and demonstrates:
 
 Full-stack development
@@ -209,13 +209,13 @@ Professional engineering practices
 
 ---
 
-👨‍💻 Author
+## 👨‍💻 Author
 Bhavya Sharma
 GitHub: https://github.com/bhavyasharma2003
 
 ---
 
-⭐ Acknowledgements
+## ⭐ Acknowledgements
 Google Lighthouse
 
 OpenAI
