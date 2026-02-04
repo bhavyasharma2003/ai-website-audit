@@ -25,6 +25,21 @@ const AiSummarySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const CrawlDataSchema = new mongoose.Schema(
+  {
+    title: String,
+    metaDescription: String,
+    h1Headings: [String],
+    // ✅ GDPR Detection
+    gdpr:{
+      cookieBannerDetected: { type: Boolean, default: false },
+      privacyPolicyDetected: { type: Boolean, default: false },
+      consentKeywordsFound: { type: Boolean, default: false }
+    }
+  },
+  { _id: false }
+);
+
 const AuditSchema = new mongoose.Schema(
   {
     url: { type: String, required: true },
@@ -34,6 +49,7 @@ const AuditSchema = new mongoose.Schema(
       default: 'queued'
     },
     html: String,
+    crawlData: CrawlDataSchema,
     lighthouse: LighthouseSchema,
     aiSummary: AiSummarySchema,
     pdfPath: String,

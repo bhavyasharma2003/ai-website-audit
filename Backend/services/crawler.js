@@ -42,6 +42,22 @@ async function crawlPage(url) {
       // Extract all H1 headings
       const h1Headings = Array.from(document.querySelectorAll('h1')).map(h1 => h1.textContent?.trim() || '').filter(text => text.length > 0);
       
+      // -----------------------
+      // GDPR Detection
+      // -----------------------
+      const pageText = document.body.innerText.toLowerCase();
+
+      const cookieBannerDetected =
+        !!document.querySelector('[id*="cookie"], [class*="cookie"], [id*="consent"], [class*="consent"]');
+
+      const privacyPolicyDetected =
+        !!document.querySelector('a[href*="privacy"]');
+
+      const consentKeywordsFound =
+        pageText.includes("cookie") ||
+        pageText.includes("gdpr") ||
+        pageText.includes("consent");
+        
       return { 
         title, 
         metaDescription,

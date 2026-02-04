@@ -145,6 +145,11 @@ router.post("/", async (req, res) => {
     // Update audit with crawled data + real Lighthouse scores + AI summary
     audit.status = "completed";
     audit.html = crawlData.html;
+    audit.crawlData = {
+      title: crawlData.title,
+      metaDescription: crawlData.metaDescription,
+      h1Headings: crawlData.h1Headings || [],
+    };
     audit.lighthouse = {
       scores: lighthouseResult.scores,
       report: lighthouseResult.report,
